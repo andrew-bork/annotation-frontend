@@ -6,11 +6,12 @@
 
     display: flex;
     flex-direction: row;   
+    overflow: hidden;
 }
 
 
 .main > * {
-    border-right: 1px #ffffff11 solid;
+    border-right: 1px #ffffff7c solid;
 }
 
 .toolbar li {

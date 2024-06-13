@@ -7,6 +7,7 @@ import styles from "./page.module.css";
 import { MdCrop } from "react-icons/md";
 import { MdOutlineCircle } from "react-icons/md";
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from "react";
+import { SVGViewer } from "./Viewer";
 
 
 function renderImage(image : HTMLImageElement, ctx : CanvasRenderingContext2D, size: { width: number, height: number }, offset: { x: number, y: number }, scale: number) {
@@ -18,27 +19,17 @@ function renderImage(image : HTMLImageElement, ctx : CanvasRenderingContext2D, s
 
 
 
-interface Vector {
+export interface Size {
+    width: number, height: number
+};
+export interface Vector {
     x: number, y: number
 };
 
-type ClientCoord = Vector;
-type ViewportCoord = Vector;
-type ImageCoord = Vector;
-type RelativeCoord = Vector;
-
-
-
-
-
-
-
-
-
-
-
-
-
+export type ClientCoord = Vector;
+export type ViewportCoord = Vector;
+export type ImageCoord = Vector;
+export type RelativeCoord = Vector;
 
 function useAnimationFrame(render: (dt: number) => void) {
     const renderRef = useRef(render);
@@ -87,7 +78,7 @@ function clamp(x: number, a: number, b: number) {
 
 
 
-function useResize(element : MutableRefObject<HTMLElement>, callback: (size: { width: number, height: number}) => void) {
+export function useResize(element : MutableRefObject<HTMLElement>, callback: (size: { width: number, height: number}) => void) {
     const callbackRef = useRef(callback);
     callbackRef.current = callback;
 
@@ -110,7 +101,9 @@ function useResize(element : MutableRefObject<HTMLElement>, callback: (size: { w
 
 
 
-
+function dist(a: Vector, b: Vector) {
+    return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
 
 
 
@@ -118,151 +111,146 @@ export default function ImageViewer() {
 
     const [ currentTool, setCurrentTool ] = useState("none");
     const image = useRef<HTMLImageElement>(null!);
-    const viewport = useRef<HTMLDivElement>(null!);
-    const imageLayerElement = useRef<HTMLCanvasElement>(null!);
-    const annotationLayerElement = useRef<HTMLCanvasElement>(null!);
+    // const viewport = useRef<HTMLDivElement>(null!);
+    // const imageLayerElement = useRef<HTMLCanvasElement>(null!);
+    // const annotationLayerElement = useRef<HTMLCanvasElement>(null!);
 
-    const imageLayer = useRef<CanvasRenderingContext2D|null>(null);
-    const annotationLayer = useRef<CanvasRenderingContext2D|null>(null);
+    // const imageLayer = useRef<CanvasRenderingContext2D|null>(null);
+    // const annotationLayer = useRef<CanvasRenderingContext2D|null>(null);
 
 
-    const [ size, setSize ] = useState({ width: 300, height: 150 });
-    const [ offset, setOffset ] = useState<ViewportCoord>({ x: 0, y: 0 });
-    const [ mousePosition, setMousePosition ] = useState<ViewportCoord>({ x: 0, y: 0 });
-    const [ zoomLevel, setZoomLevel ] = useState(0);
-    const scale = Math.pow(10, zoomLevel);
-    // const [ scale, setScale ] = useState(1);
+    // const [ size, setSize ] = useState({ width: 300, height: 150 });
+    // const [ offset, setOffset ] = useState<ViewportCoord>({ x: 0, y: 0 });
+    // const [ mousePosition, setMousePosition ] = useState<ViewportCoord>({ x: 0, y: 0 });
+    // const [ zoomLevel, setZoomLevel ] = useState(0);
+    // const scale = Math.pow(10, zoomLevel);
+    // // const [ scale, setScale ] = useState(1);
 
     const mouseState = useRef("none");
 
 
 
-    const [ corner1, setCorner1 ] = useState<ImageCoord|null>(null);
-    const [ corner2, setCorner2 ] = useState<ImageCoord|null>(null);
+    // const [ corner1, setCorner1 ] = useState<ImageCoord|null>(null);
+    // const [ corner2, setCorner2 ] = useState<ImageCoord|null>(null);
 
-    const [ center, setCenter ] = useState<ImageCoord|null>(null);
-    const [ radius, setRadius ] = useState<number|null>(null);
-
-
-
-    useEffect(() => {
-        imageLayer.current = imageLayerElement.current.getContext("2d");
-        annotationLayer.current = annotationLayerElement.current.getContext("2d");
-
-        imageLayerElement.current.width = 
-            annotationLayerElement.current.width = 
-            viewport.current.clientWidth;
-        imageLayerElement.current.height = 
-            annotationLayerElement.current.height = 
-            viewport.current.clientHeight;
-
-        setSize({ width: viewport.current.clientWidth, height: viewport.current.clientHeight });
-
-    }, [ setSize ]);
+    // const [ center, setCenter ] = useState<ImageCoord|null>(null);
+    // const [ radius, setRadius ] = useState<number|null>(null);
 
 
-    useResize(viewport, (size) => {
-        imageLayerElement.current.width = 
-            annotationLayerElement.current.width = 
-            size.width;
-        imageLayerElement.current.height = 
-            annotationLayerElement.current.height = 
-            size.height;
+
+    // useEffect(() => {
+    //     imageLayer.current = imageLayerElement.current.getContext("2d");
+    //     annotationLayer.current = annotationLayerElement.current.getContext("2d");
+
+    //     imageLayerElement.current.width = 
+    //         annotationLayerElement.current.width = 
+    //         viewport.current.clientWidth;
+    //     imageLayerElement.current.height = 
+    //         annotationLayerElement.current.height = 
+    //         viewport.current.clientHeight;
+
+    //     setSize({ width: viewport.current.clientWidth, height: viewport.current.clientHeight });
+
+    // }, [ setSize ]);
+
+
+    // useResize(viewport, (size) => {
+    //     imageLayerElement.current.width = 
+    //         annotationLayerElement.current.width = 
+    //         size.width;
+    //     imageLayerElement.current.height = 
+    //         annotationLayerElement.current.height = 
+    //         size.height;
         
-        if(imageLayer.current) {
-            renderImage(image.current, imageLayer.current, size, offset, scale);
-        }
+    //     if(imageLayer.current) {
+    //         renderImage(image.current, imageLayer.current, size, offset, scale);
+    //     }
 
-        setSize(size);
-    });
+    //     setSize(size);
+    // });
 
-    useAnimationFrame(() => {
-        if(imageLayer.current) {
-            imageLayer.current.clearRect(0, 0, size.width, size.height);
-            renderImage(image.current, imageLayer.current, size, offset, scale);
-        }
-        if(annotationLayer.current) {
-            annotationLayer.current.clearRect(0, 0, size.width, size.height);
+    // useAnimationFrame(() => {
+    //     if(imageLayer.current) {
+    //         imageLayer.current.clearRect(0, 0, size.width, size.height);
+    //         renderImage(image.current, imageLayer.current, size, offset, scale);
+    //     }
+    //     if(annotationLayer.current) {
+    //         annotationLayer.current.clearRect(0, 0, size.width, size.height);
 
-            if(corner1 && corner2) {
-                annotationLayer.current.strokeStyle = "#0000ff";
-                annotationLayer.current.lineWidth = 4;
-                const a = corner1.x * scale + offset.x + size.width/2, 
-                    b = corner1.y * scale + offset.y + size.height/2,
-                    c = corner2.x * scale + offset.x + size.width/2,
-                    d = corner2.y * scale + offset.y + size.height/2;
-                annotationLayer.current.strokeRect(a, b, c - a, d - b);
-            }else if(corner1) {
-                const a = corner1.x * image.current.width * scale + offset.x + size.width/2, 
-                    b = corner1.y * scale + offset.y + size.height/2;
+    //         if(corner1 && corner2) {
+    //             annotationLayer.current.strokeStyle = "#0000ff";
+    //             annotationLayer.current.lineWidth = 4;
+    //             const a = corner1.x * scale + offset.x + size.width/2, 
+    //                 b = corner1.y * scale + offset.y + size.height/2,
+    //                 c = corner2.x * scale + offset.x + size.width/2,
+    //                 d = corner2.y * scale + offset.y + size.height/2;
+    //             annotationLayer.current.strokeRect(a, b, c - a, d - b);
+    //         }else if(corner1) {
+    //             const a = corner1.x * image.current.width * scale + offset.x + size.width/2, 
+    //                 b = corner1.y * scale + offset.y + size.height/2;
                 
                 
-                annotationLayer.current.strokeStyle = "#0000ff";
-                annotationLayer.current.lineWidth = 4;
-                annotationLayer.current.beginPath();
-                annotationLayer.current.ellipse(a, b, 6, 6,0, 0, 2 * Math.PI);
-                annotationLayer.current.stroke();
+    //             annotationLayer.current.strokeStyle = "#0000ff";
+    //             annotationLayer.current.lineWidth = 4;
+    //             annotationLayer.current.beginPath();
+    //             annotationLayer.current.ellipse(a, b, 6, 6,0, 0, 2 * Math.PI);
+    //             annotationLayer.current.stroke();
 
-            }
+    //         }
 
 
-            if(center && radius) {
-                const a = center.x * scale + offset.x + size.width/2, 
-                    b = center.y * scale + offset.y + size.height/2;
+    //         if(center && radius) {
+    //             const a = center.x * scale + offset.x + size.width/2, 
+    //                 b = center.y * scale + offset.y + size.height/2;
                 
                 
-                annotationLayer.current.strokeStyle = "#ffff00";
-                annotationLayer.current.lineWidth = 4;
-                annotationLayer.current.beginPath();
-                annotationLayer.current.ellipse(a, b, radius * scale, radius * scale, 0, 0, 2 * Math.PI);
-                annotationLayer.current.stroke();
-            }else if(center) {
-                const a = center.x * scale + offset.x + size.width/2, 
-                    b = center.y * scale + offset.y + size.height/2;
-                annotationLayer.current.strokeStyle = "#ffff00";
-                annotationLayer.current.lineWidth = 4;
-                annotationLayer.current.beginPath();
-                annotationLayer.current.ellipse(a, b, 6, 6,0, 0, 2 * Math.PI);
-                annotationLayer.current.stroke();
+    //             annotationLayer.current.strokeStyle = "#ffff00";
+    //             annotationLayer.current.lineWidth = 4;
+    //             annotationLayer.current.beginPath();
+    //             annotationLayer.current.ellipse(a, b, radius * scale, radius * scale, 0, 0, 2 * Math.PI);
+    //             annotationLayer.current.stroke();
+    //         }else if(center) {
+    //             const a = center.x * scale + offset.x + size.width/2, 
+    //                 b = center.y * scale + offset.y + size.height/2;
+    //             annotationLayer.current.strokeStyle = "#ffff00";
+    //             annotationLayer.current.lineWidth = 4;
+    //             annotationLayer.current.beginPath();
+    //             annotationLayer.current.ellipse(a, b, 6, 6,0, 0, 2 * Math.PI);
+    //             annotationLayer.current.stroke();
+    //         }
+    //     }
+    // });
 
-            }
-        }
-    });
+    // const imageToRelative = (v: ImageCoord) => {
+    //     return {
+    //         x: v.x / image.current.width,
+    //         y: v.y / image.current.height,
+    //     };
+    // }
 
+    // const viewportToImage = (v: ViewportCoord) => {
+    //     return {
+    //         x: (v.x - offset.x) / scale,
+    //         y: (v.y - offset.y) /scale,
+    //     };
+    // };
 
-    useWindowResize(() => {
-        console.log("resize!");
-    });
+    // const clientToViewport = (v : ClientCoord) =>  {
+    //     const rect = viewport.current.getBoundingClientRect();
+    //     return {
+    //         x: v.x - rect.left - size.width/2,
+    //         y: v.y - rect.top - size.height/2,
+    //     };
+    // }
 
-    const imageToRelative = (v: ImageCoord) => {
-        return {
-            x: v.x / image.current.width,
-            y: v.y / image.current.height,
-        };
-    }
+    // const clampOffsets = (v: ViewportCoord) => {
+    //     return {
+    //         x: clamp(v.x, -image.current.width * scale * 0.5, image.current.width * scale * 0.5),
+    //         y: clamp(v.y, -image.current.height * scale * 0.5, image.current.height * scale * 0.5),
+    //     }
+    // };
 
-    const viewportToImage = (v: ViewportCoord) => {
-        return {
-            x: (v.x - offset.x) / scale,
-            y: (v.y - offset.y) /scale,
-        };
-    };
-
-    const clientToViewport = (v : ClientCoord) =>  {
-        const rect = viewport.current.getBoundingClientRect();
-        return {
-            x: v.x - rect.left - size.width/2,
-            y: v.y - rect.top - size.height/2,
-        };
-    }
-
-    const clampOffsets = (v: ViewportCoord) => {
-        return {
-            x: clamp(v.x, -image.current.width * scale * 0.5, image.current.width * scale * 0.5),
-            y: clamp(v.y, -image.current.height * scale * 0.5, image.current.height * scale * 0.5),
-        }
-    };
-
+    const [ annotations, setAnnotations ] = useState<any[]>([]);
 
     return (<main className={styles["main"]}>
 
@@ -271,7 +259,7 @@ export default function ImageViewer() {
                 onClick={() => {
                     if(currentTool === "box") {
                         setCurrentTool("none");
-                        mouseState.current = "none";
+                        // mouseState.current = "none";
                     }
                     else setCurrentTool("box")
                 }}
@@ -282,7 +270,7 @@ export default function ImageViewer() {
                 onClick={() => {
                     if(currentTool === "circle") {
                         setCurrentTool("none");
-                        mouseState.current = "none";
+                        // mouseState.current = "none";
                     }
                     else setCurrentTool("circle")
                 }}
@@ -291,7 +279,7 @@ export default function ImageViewer() {
             </li>
         </ul>
 
-        <div className={styles["viewport"]} ref={viewport}
+        {/* <div className={styles["viewport"]} ref={viewport}
             onMouseDown={(e) => {
                 if(mouseState.current === "drop-circle-radius") {
                     if(center) {
@@ -427,11 +415,74 @@ export default function ImageViewer() {
                 </>
             : <></>)}
             </div>
-        </div>
+        </div> */}
+
+        <SVGViewer
+            annotations={annotations}
+            onMouseDown={(pos, e) => {
+                if(currentTool === "box") {
+                    mouseState.current = "create-box-corner";
+                    const copy = annotations.map(a => a);
+                    copy.push({
+                        type: "box",
+                        corners: [
+                            pos,
+                            pos
+                        ],
+                        color: `hsl(${360 * Math.random()} 80% 70%)`,
+                        label: "rat"
+                    });
+                    setAnnotations(copy);
+                    return true;
+                }else if(currentTool === "circle") {
+                    mouseState.current = "create-circle-radius";
+                    const copy = annotations.map(a => a);
+                    copy.push({
+                        type: "circle",
+                        center: pos,
+                        radius: 0,
+                        label: "rat",
+                        color: `hsl(${360 * Math.random()} 80% 70%)`,
+                    });
+                    setAnnotations(copy);
+                    return true;
+                }
+                return false;
+            }}
+            onMouseMove={(pos, e) => {
+                if(mouseState.current === "create-box-corner") {
+                    const copy = annotations.map(a => a);
+                    copy[copy.length - 1].corners[1] = pos;
+                    setAnnotations(copy);
+                    return true;
+                }else if(mouseState.current === "create-circle-radius") {
+                    const copy = annotations.map(a => a);
+                    copy[copy.length - 1].radius = dist(copy[copy.length - 1].center, pos);
+                    setAnnotations(copy);
+                    return true;
+                }
+                return false;
+            }}
+            onMouseUp={(pos, e) => {
+                if(mouseState.current === "create-box-corner") {
+                    mouseState.current = "none";
+                    return true;
+                }else if(mouseState.current === "create-circle-radius") {
+                    mouseState.current = "none";
+                    return true;
+                }
+                return false;
+            }}
+        
+        />
 
 
         <div className={styles["inspector"]}>
-
+            <ul>
+                {annotations.map((annotation, i) => {
+                    return <li key={i}>{annotation.label}</li>
+                })}
+            </ul>
         </div>
 
 
