@@ -1,0 +1,71 @@
+
+
+.main {
+    width: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: row;   
+}
+
+
+.main > * {
+    border-right: 1px #ffffff11 solid;
+}
+
+.toolbar li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px 8px;
+    padding: 8px 0;
+    border-radius: 4px;
+
+    transition: background-color .3s, color .3s;
+}
+
+.toolbar li:hover:not(.selected) {
+    background-color: #ffffff11;
+    color: #ffffffaa;
+}
+
+.selected {
+    color: #4f4fc4;
+    background-color: #ffffff22;
+}
+.selected:hover {
+    color: #4f4fc4;
+    background-color: #ffffff33;
+}
+
+.toolbar {
+    width: 64px;
+    list-style-type: none;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.viewport {
+    flex-grow: 2;
+    position: relative;
+}
+
+.viewport canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.viewport div {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+}
+
+.inspector {
+    width: 256px;
+}
