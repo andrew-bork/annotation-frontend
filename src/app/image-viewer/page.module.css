@@ -86,7 +86,7 @@
 }
 
 .annotation-list li {
-    padding: 8px;
+    padding: 8px 16px;
 
     display: flex;
     flex-direction: row;
@@ -95,7 +95,7 @@
 
 }
 
-.annotation-list li div {
+.annotation-list li div:first-child {
     flex-grow: 2;
 }
 
