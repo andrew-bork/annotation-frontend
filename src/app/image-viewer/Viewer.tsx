@@ -10,10 +10,16 @@ function BoxAnnotation({ scale, corners, label, color } : { scale: number, corne
         x: Math.max(corners[0].x, corners[1].x) * scale,
         y: Math.max(corners[0].y, corners[1].y) * scale,
     }
-    const width = (corners[1].x-corners[0].x) * scale;
-    const height = (corners[1].y-corners[0].y) * scale;
+
+    const topLeft = {
+        x: Math.min(corners[0].x, corners[1].x) * scale,
+        y: Math.min(corners[0].y, corners[1].y) * scale,
+
+    }
+    const width = bottomRight.x - topLeft.x;
+    const height = bottomRight.y - topLeft.y;
     return <>
-        <rect strokeWidth={0.005} stroke={color} fill="none" x={corners[0].x*scale} y={corners[0].y*scale} width={width} height={height}></rect>
+        <rect strokeWidth={0.005} stroke={color} fill="none" x={topLeft.x} y={topLeft.y} width={width} height={height}></rect>
         {
             (width > 0.1 ? 
                 <>

@@ -69,4 +69,41 @@
 
 .inspector {
     width: 256px;
+    display: flex;
+    flex-direction: column;
+}
+.annotation-list {
+    border-bottom:  1px #ffffff7c solid;
+}
+.annotation-list h2 {
+    padding: 4px 8px;
+    border-bottom:  1px #ffffff7c solid;
+}
+
+.annotation-list ul {
+    list-style-type: none;
+    min-height: 256px;
+}
+
+.annotation-list li {
+    padding: 8px;
+
+    display: flex;
+    flex-direction: row;
+
+    justify-content: center;
+
+}
+
+.annotation-list li div {
+    flex-grow: 2;
+}
+
+.annotation-list li:nth-child(even) {
+    background-color: #ffffff11;
+}
+
+.annotation-list li:hover {
+    background-color: #ffffff21;
+
 }
